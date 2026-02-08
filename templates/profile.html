@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% load i18n static %}
+
+{% block title %}
+    {% if is_own_profile %}
+        Мой профиль
+    {% else %}
+        Профиль {{ profile_user.username }}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<style>
+    :root {
+        --bg: #f8fff8;
+        --card-bg: #ffffff;
+        --text: #1e3c2e;
+        --title: #006400;
+        --accent: #a8e6cf;
+        --accent-light: #d4f4dd;
+        --border: #81c784;
+        --shadow: 0 10px 30px rgba(129, 199, 132, 0.18);
+        --hover-shadow: 0 18px 45px rgba(129, 199, 132, 0.32);
+        --transition: all 0.35s ease;
+    }
+
+    body {
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+    }
+
+    .profile-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 60px 20px;
+    }
+
+    .profile-header {
+        text-align: center;
+        margin-bottom: 4rem;
+        padding: 3rem 2rem;
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        border: 2px solid var(--border);
+    }
+
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--accent-light);
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--title);
+        border: 4px solid var(--accent);
+    }
+
+    .profile-name {
+        font-size: 2.8rem;
+        font-weight: 800;
+        color: var(--title);
+        margin-bottom: 0.5rem;
+    }
+
+    .profile-info {
+        font-size: 1.3rem;
+        color: #4a7043;
+        margin-bottom: 1.5rem;
+    }
+
+    .recipe-count {
+        font-size: 1.4rem;
+        color: var(--title);
+        font-weight: 700;
+    }
+
+    .recipes-section {
+        margin-top: 3rem;
+    }
+
+    .recipes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+        gap: 2.8rem;
+        margin-top: 2rem;
+    }
+
+    .recipe-card {
+        background: var(--card-bg);
+        border-radius: 24px;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        border: 2px solid var(--border);
+        cursor: pointer;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .recipe-card:hover {
+        transform: translateY(-15px);
+        box-shadow: var(--hover-shadow);
+        border-color: #4caf50;
+    }
+
+    .recipe-image-wrapper {
+        height: 240px;
+        overflow: hidden;
+        background: var(--accent-light);
+    }
+
+    .recipe-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.45s ease;
+    }
+
+    .recipe-card:hover .recipe-image {
+        transform: scale(1.08);
+    }
+
+    .image-placeholder {
+        height: 100%;
+        background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4caf50;
+        font-size: 1.4rem;
+        font-weight: 500;
+    }
+
+    .recipe-body {
+        padding: 1.8rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .recipe-title {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: var(--title);
+        margin-bottom: 0.8rem;
+    }
+
+    .recipe-excerpt {
+        font-size: 1.05rem;
+        line-height: 1.6;
+        color: #4a7043;
+        margin-bottom: 1.2rem;
+        flex-grow: 1;
+    }
+
+    .recipe-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #e0f2e9;
+    }
+
+    .meta-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .time-badge {
+        background: #e8f5e9;
+        color: #2e7d32;
+        padding: 0.5rem 1rem;
+        border-radius: 30px;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 8rem 2rem;
+        color: #4a7043;
+        background: white;
+        border-radius: 24px;
+        box-shadow: var(--shadow);
+        border: 2px solid var(--border);
+    }
+
+    .empty-icon {
+        font-size: 8rem;
+        margin-bottom: 2rem;
+        color: #81c784;
+    }
+
+    @media (max-width: 768px) {
+        .recipes-grid {
+            grid-template-columns: 1fr;
+        }
+        .recipe-footer {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="profile-page">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            {% if profile_user.profile_picture %}
+                <img src="{{ profile_user.profile_picture.url }}" alt="{{ profile_user.username }}" style="width:100%; height:100%; object-fit: cover; border-radius:50%;">
+            {% else %}
+                👤
+            {% endif %}
+        </div>
+
+        <h2 class="profile-name">
+            {{ profile_user.username }}
+            {% if is_own_profile %} (мой профиль){% endif %}
+        </h2>
+
+        <p class="profile-info">
+            <span class="recipe-count">{{ recipe_count }} рецепт{% if recipe_count != 1 %}а{% endif %}</span>
+            {% if profile_user.date_joined %}
+                <br>На сайте с {{ profile_user.date_joined|date:"d.m.Y" }}
+            {% endif %}
+        </p>
+
+        {% if is_own_profile %}
+        <a href="{% url 'recipe_create' %}" class="btn-add">
+            Yangi retsept qo‘shish
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="recipes-section">
+        <h3 class="text-center mb-4" style="color: var(--title);">
+            {% if is_own_profile %}
+                Мои рецепты
+            {% else %}
+                Рецепты пользователя {{ profile_user.username }}
+            {% endif %}
+        </h3>
+
+        {% if recipes %}
+        <div class="recipe-grid">
+            {% for recipe in recipes %}
+            <div class="recipe-card-wrapper" style="--order: {{ forloop.counter }};">
+                <a href="{% url 'recipe_detail' recipe.id %}" class="text-decoration-none">
+                    <div class="recipe-card">
+                        <div class="recipe-image-wrapper">
+                            {% if recipe.image %}
+                                <img src="{{ recipe.image.url }}"
+                                     alt="{{ recipe.title }}"
+                                     class="recipe-image"
+                                     loading="lazy">
+                            {% else %}
+                                <div class="image-placeholder">
+                                    <span>Rasm yo‘q</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="recipe-body">
+                            <h3 class="recipe-title">{{ recipe.title }}</h3>
+                            <p class="recipe-excerpt">
+                                {{ recipe.description|truncatechars:100 }}
+                            </p>
+
+                            <div class="recipe-footer">
+                                <div class="meta-info">
+                                    <span class="time-badge">⏱️ {{ recipe.cooking_time|default:"—" }} daqiqa</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🥗</div>
+            <h3>Hozircha retseptlar yo‘q</h3>
+            {% if is_own_profile %}
+            <p>Добавьте свой первый рецепт!</p>
+            <a href="{% url 'recipe_create' %}" class="btn-add">
+                Yangi retsept qo‘shish
+            </a>
+            {% else %}
+            <p>Пользователь пока не добавил ни одного рецепта.</p>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}

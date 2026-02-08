@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Mening Retseptlarim{% endblock %}</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <style>
+        :root {
+            --primary: #4caf50;           /* основной салатовый */
+            --primary-light: #81c784;     /* светлее салатовый */
+            --primary-dark: #2e7d32;      /* тёмный зелёный */
+            --accent: #a8e6cf;            /* нежный салатовый акцент */
+            --bg: #f8fff8;                /* очень светлый салатовый фон */
+            --card: #ffffff;
+            --text: #1e3c2e;
+            --shadow: 0 8px 25px rgba(129, 199, 132, 0.25);
+            --glow: 0 0 20px rgba(129, 199, 132, 0.4);
+            --transition: all 0.35s ease;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(20px) saturate(180%);
+            border-bottom: 2px solid var(--accent);
+            box-shadow: var(--shadow);
+        }
+
+        .navbar-brand {
+            font-weight: 900;
+            font-size: 1.8rem;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .navbar-logo {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+        }
+
+        .nav-link {
+            color: var(--primary-dark) !important;
+            font-weight: 600;
+            padding: 0.8rem 1.4rem !important;
+            border-radius: 30px;
+            transition: var(--transition);
+            margin: 0 6px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent);
+            color: white !important;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(168, 230, 207, 0.4);
+        }
+
+        .nav-link i {
+            font-size: 1.3rem;
+            margin-right: 8px;
+        }
+
+        .dropdown-menu {
+            background: white;
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-top: 10px;
+        }
+
+        .dropdown-item {
+            color: var(--primary-dark);
+            padding: 0.8rem 1.5rem;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background: var(--accent-light);
+            color: var(--primary);
+            transform: translateX(8px);
+        }
+
+        .search-form {
+            max-width: 450px;
+            width: 100%;
+        }
+
+        .search-form .form-control {
+            border-radius: 50px 0 0 50px;
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--accent);
+            background: white;
+        }
+
+        .search-form .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.25rem rgba(129, 199, 132, 0.25);
+        }
+
+        .search-form .btn {
+            border-radius: 0 50px 50px 0;
+            background: var(--primary);
+            border: none;
+            padding: 0 1.8rem;
+            transition: var(--transition);
+        }
+
+        .search-form .btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        main {
+            padding-top: 100px;
+            padding-bottom: 60px;
+        }
+
+        footer {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: white;
+            border-top: 4px solid var(--accent);
+        }
+
+        footer a {
+            color: white;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        footer a:hover {
+            color: var(--accent);
+            transform: translateY(-3px);
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="d-flex flex-column min-vh-100">
+
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container-fluid px-4 px-lg-5">
+            <a class="navbar-brand" href="/">
+                <img src="https://thumbs.dreamstime.com/b/line-art-icon-chef-s-hat-wire-whisk-baking-cooking-vector-design-generative-ai-minimalist-black-white-illustration-403026280.jpg" 
+                     alt="Logo" class="navbar-logo">
+                Mening Retseptlarim
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/' %}active{% endif %}" href="/">
+                            <i class="bi bi-house-door-fill"></i> Bosh sahifa
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/recipe/list/' in request.path %}active{% endif %}" href="{% url 'recipe_list' %}">
+                            <i class="bi bi-book-fill"></i> Retseptlar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.path == '/recipe/create/' %}active{% endif %}" href="{% url 'recipe_create' %}">
+                            <i class="bi bi-plus-circle-fill"></i> Yangi retsept
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if '/recipe/wishlist/' in request.path %}active{% endif %}" href="{% url 'wishlist' %}">
+                            <i class="bi bi-heart-fill"></i> Sevimlilar
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Поиск -->
+                <form class="d-flex search-form mx-lg-4 my-3 my-lg-0" action="{% url 'search' %}" method="get">
+                    <input class="form-control" type="search" name="q" placeholder="Retsept, masalliq yoki kategoriya..." 
+                           aria-label="Qidiruv" value="{{ request.GET.q|default:'' }}" required>
+                    <button class="btn" type="submit">
+                        <i class="bi bi-search fs-5"></i>
+                    </button>
+                </form>
+
+                <ul class="navbar-nav mb-2 mb-lg-0">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-circle fs-3 me-2"></i>
+                                <span class="d-none d-lg-inline fw-bold">{{ user.username }}</span>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li class="dropdown-header fw-bold text-primary">
+                                    Salom, {{ user.get_full_name|default:user.username }}! 👋
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'my_profile' %}">
+                                        <i class="bi bi-person-fill me-2"></i> Mening profilim
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item" href="{% url 'recipe_create' %}">
+                                        <i class="bi bi-plus-circle me-2"></i> Yangi retsept qo‘shish
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{% url 'logout' %}">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Chiqish
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">
+                                <i class="bi bi-box-arrow-in-right me-2"></i> Kirish
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow-1 container my-5 pt-5">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <footer class="py-5 mt-auto text-white text-center" style="background: var(--primary-dark);">
+        <div class="container">
+            <p class="mb-1">© 2025 <strong>Mening Retseptlarim</strong>. Barcha huquqlar himoyalangan.</p>
+            <p class="mb-0">Oshxona sehri bilan birga pishiring! 🍳🌿</p>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

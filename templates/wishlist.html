@@ -1,0 +1,175 @@
+{% extends "home.html" %}
+{% load static %}
+
+{% block content %}
+<div class="wishlist-page">
+    <div class="page-header">
+        <h1>Sevimli retseptlarim</h1>
+        <p class="page-subtitle">Yoqtirgan va saqlangan mazali taomlar to‘plami ❤️</p>
+    </div>
+
+    {% if wishlist_recipes %}
+    <div class="recipes-grid">
+        {% for recipe in wishlist_recipes %}
+        <article class="recipe-card">
+            <div class="recipe-image-wrapper">
+                {% if recipe.image %}
+                    <img src="{{ recipe.image.url }}"
+                         alt="{{ recipe.title }}"
+                         class="recipe-image"
+                         loading="lazy">
+                {% else %}
+                    <div class="image-placeholder">
+                        <span>Rasm yo‘q</span>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="recipe-body">
+                <h3 class="recipe-title">{{ recipe.title }}</h3>
+                <p class="recipe-excerpt">
+                    {{ recipe.description|truncatechars:110 }}
+                </p>
+
+                <div class="recipe-footer">
+                    <!-- Лайк-кнопка (уже лайкнутый рецепт) -->
+                    <form method="post" action="/recipe/like/{{ recipe.id }}/" class="like-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn-like liked" aria-label="Unlike">
+                            <span class="like-icon">❤️</span>
+                            <span class="like-count">{{ recipe.likes.count }}</span>
+                        </button>
+                    </form>
+
+                    <a href="/recipe/detail/{{ recipe.id }}/" class="btn-detail">
+                        Batafsil
+                    </a>
+                    
+                </div>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">🤍</div>
+        <h3>Hozircha sevimli retseptlar yo‘q</h3>
+        <p>Retseptlarni ko‘rib chiqing va yoqtirganlaringizni ❤️ bilan belgilang!</p>
+        <a href="/recipe/list/" class="btn-add mt-4">
+            Barcha retseptlarga qaytish
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+    :root {
+        --bg: #f8f9fa;
+        --text: #212529;
+        --accent: #e63946;
+        --card-bg: #ffffff;
+        --shadow: 0 12px 40px rgba(0,0,0,0.1);
+        --border: #dee2e6;
+        --primary: #0d6efd;
+        --muted: #6c757d;
+        --hover-bg: rgba(0,0,0,0.04);
+        --transition: all 0.35s ease;
+        --like-color: #e11d48;
+    }
+
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg: #121212;
+            --text: #e0e0e0;
+            --card-bg: #1e1e1e;
+            --shadow: 0 12px 40px rgba(0,0,0,0.5);
+            --border: #343a40;
+            --primary: #0d8bfd;
+            --muted: #adb5bd;
+            --hover-bg: rgba(255,255,255,0.06);
+            --like-color: #fb7185;
+        }
+    }
+
+    .wishlist-page {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+
+    .page-header h1 {
+        font-size: clamp(2.8rem, 7vw, 4rem);
+        font-weight: 800;
+        margin-bottom: 1rem;
+    }
+
+    .page-subtitle {
+        font-size: 1.3rem;
+        color: var(--muted);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    /* Остальные стили полностью как в списке рецептов */
+    .recipes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2.8rem; }
+    .recipe-card { background: var(--card-bg); border-radius: 24px; overflow: hidden; box-shadow: var(--shadow); transition: var(--transition); display: flex; flex-direction: column; height: 100%; }
+    .recipe-card:hover { transform: translateY(-15px); box-shadow: 0 25px 60px rgba(0,0,0,0.2); }
+    .recipe-image-wrapper { position: relative; height: 240px; overflow: hidden; }
+    .recipe-image { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+    .recipe-card:hover .recipe-image { transform: scale(1.15); }
+    .image-placeholder { height: 100%; background: linear-gradient(135deg, #f1f3f5, #e9ecef); display: flex; align-items: center; justify-content: center; color: var(--muted); font-size: 1.2rem; font-style: italic; }
+    @media (prefers-color-scheme: dark) { .image-placeholder { background: linear-gradient(135deg, #2c3034, #212529); } }
+    .recipe-body { padding: 2rem; display: flex; flex-direction: column; flex: 1; }
+    .recipe-title { font-size: 1.6rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.3; }
+    .recipe-excerpt { font-size: 1.05rem; color: var(--muted); line-height: 1.7; margin-bottom: 2rem; flex: 1; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; }
+    .recipe-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; gap: 1rem; flex-wrap: wrap; }
+
+    .like-form { margin: 0; }
+    .btn-like { background: transparent; border: none; font-size: 1.8rem; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.8rem; border-radius: 16px; transition: var(--transition); color: var(--muted); }
+    .btn-like:hover { background: var(--hover-bg); transform: scale(1.15); }
+    .btn-like.liked { color: var(--like-color); animation: heartbeat 0.6s ease; }
+    .like-icon { transition: transform 0.3s ease; }
+    .btn-like:hover .like-icon { transform: scale(1.3); }
+    .like-count { font-size: 1.1rem; font-weight: 600; color: var(--text); }
+
+    @keyframes heartbeat {
+        0% { transform: scale(1); }
+        20% { transform: scale(1.3); }
+        40% { transform: scale(1.1); }
+        60% { transform: scale(1.25); }
+        80% { transform: scale(1.15); }
+        100% { transform: scale(1); }
+    }
+
+    .btn-detail { background: var(--primary); color: white; padding: 12px 28px; border-radius: 14px; text-decoration: none; font-weight: 600; transition: var(--transition); box-shadow: 0 6px 20px rgba(13,110,253,0.25); }
+    .btn-detail:hover { background: #0a58ca; transform: translateY(-3px); }
+
+    .admin-buttons { display: flex; gap: 1rem; }
+    .btn-edit, .btn-delete { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; transition: var(--transition); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .btn-edit { background: #ffc107; color: white; }
+    .btn-edit:hover { background: #e0a800; transform: scale(1.1); }
+    .btn-delete { background: #dc3545; color: white; }
+    .btn-delete:hover { background: #c82333; transform: scale(1.1); }
+
+    .empty-state { text-align: center; padding: 6rem 2rem; color: var(--muted); }
+    .empty-icon { font-size: 6rem; margin-bottom: 1.5rem; opacity: 0.7; }
+    .empty-state h3 { font-size: 2rem; margin-bottom: 1rem; }
+    .empty-state p { font-size: 1.2rem; margin-bottom: 2rem; }
+    .btn-add { display: inline-block; background: var(--primary); color: white; padding: 14px 36px; border-radius: 16px; font-size: 1.2rem; font-weight: 600; text-decoration: none; box-shadow: 0 8px 30px rgba(13,110,253,0.3); transition: var(--transition); }
+    .btn-add:hover { background: #0a58ca; transform: translateY(-5px); }
+
+    @media (max-width: 768px) {
+        .recipes-grid { grid-template-columns: 1fr; gap: 2rem; }
+        .recipe-footer { flex-direction: column; gap: 1.2rem; align-items: stretch; }
+        .admin-buttons { justify-content: center; }
+    }
+</style>
+{% endblock %}
